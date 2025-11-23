@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Eco Campus Faculty — Tempat Pengaduan</title>
+<style>
+:root{--sidebar:#273344;--accent:#2b75b8;--muted:#64748b;--card:#ffffff}
+*{box-sizing:border-box}
+body{font-family:Inter, 'Segoe UI', Arial, sans-serif;background:#eef3f8;margin:0;color:#14202b}
+.app{display:flex;min-height:100vh}
+/* SIDEBAR */
+.sidebar{width:260px;background:var(--sidebar);color:#e6eef8;padding:22px 0;position:fixed;left:0;top:0;bottom:0}
+.sidebar .brand{display:flex;align-items:center;gap:12px;padding:0 20px;margin-bottom:18px}
+.sidebar .brand img{width:36px;height:36px;border-radius:6px}
+.sidebar h3{font-size:16px;margin:0;color:#fff}
+.nav{margin-top:10px}
+.nav a{display:flex;align-items:center;gap:12px;padding:12px 20px;color:#cfe7ff;text-decoration:none;font-weight:600;border-left:4px solid transparent}
+.nav a:hover,.nav a.active{background:#1f2b3a;color:#fff;border-left-color:var(--accent)}
+.nav .small{font-size:12px;color:#9fb0c9;font-weight:500;margin-top:8px;padding-left:20px}
+/* MAIN */
+.main{margin-left:260px;flex:1;padding:20px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.topbar .title{font-size:20px;font-weight:700;color:var(--accent)}
+.user{display:flex;align-items:center;gap:12px}
+.user .avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+/* CARD LAYOUT */
+.card{background:var(--card);border-radius:8px;padding:14px 18px;box-shadow:0 1px 6px rgba(18,30,45,0.06);margin-bottom:16px}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:10px}
+.stat-label{font-size:13px;color:var(--muted);font-weight:600}
+.stat-value{font-size:20px;font-weight:800;color:#102032}
+.stat-icon{font-size:18px;color:var(--accent)}
+/* FILTERS */
+.filters{display:flex;gap:12px;align-items:center}
+.input{padding:8px 10px;border:1px solid #d6e4f2;border-radius:6px;background:#fbfdff}
+.select{min-width:180px}
+.btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer;font-weight:700}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-muted{background:#f5f8fb;color:#1f2b3a;border:1px solid #e1e8f2}
+/* TABLE */
+.table-wrap{overflow:auto}
+.table{width:100%;border-collapse:collapse;margin-top:12px}
+.table th, .table td{padding:12px 10px;border-bottom:1px solid #eef4fb;text-align:left;font-size:14px}
+.table thead th{background:#f7fbff;color:#2b4b6b;font-weight:700}
+.table tbody tr:hover{background:#fbfdff}
+.actions{display:flex;gap:8px}
+.badge{padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer}
+.badge.success{background:#e6f7ec;color:#0b6b3a}
+.badge.warn{background:#fff4e6;color:#a85b00}
+.badge.danger{background:#fff0f0;color:#9b1c1c}
+.badge.progress{background:#fffbe6;color:#a89b00}
+/* Login Modal */
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:2000; }
+.modal.active { display:flex; }
+.modal-content{background:#fff;padding:20px;border-radius:8px;min-width:320px;box-shadow:0 6px 24px rgba(0,0,0,0.15);}
+@media(max-width:900px){.sidebar{width:68px}.main{margin-left:68px;padding:12px}.nav a span.text{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="/mnt/data/Screenshot 2025-11-22 032036.png" alt="logo" onerror="this.style.display='none'" />
+      <div>
+        <h3>Eco Faculty</h3>
+        <div style="font-size:12px;color:#9fb0c9">Campus Facilities</div>
+      </div>
+    </div>
+
+    <nav class="nav" id="mainNav">
+      <a data-page="dashboard" class="active"><span class="icon">🏠</span><span class="text">Dashboard</span></a>
+      <a data-page="pengaduan"><span class="icon">📣</span><span class="text">Tempat Pengaduan</span></a>
+      <a data-page="uraian"><span class="icon">📄</span><span class="text">Uraian Pengaduan</span></a>
+      <a data-page="recap"><span class="icon">📊</span><span class="text">Recap Laporan</span></a>
+      <div style="height:10px"></div>
+      <a id="openLogin"><span class="icon">🔐</span><span class="text">Login</span></a>
+      <a id="logoutBtn"><span class="icon">🔌</span><span class="text">Logout</span></a>
+    </nav>
+
+    <div class="footer" style="padding:0 14px;margin-top:12px;color:#bcd6f6">Versi 1.0 • Eco Faculty</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div style="font-size:12px;color:#6b8799">Home / Tempat Pengaduan</div>
+        <div class="title">Tempat Pengaduan</div>
+      </div>
+      <div class="user" id="userArea">
+        <div style="text-align:right;font-size:13px;color:#2b4b6b" id="userName">Tamu<br><span style="font-size:11px;color:#6b8799">GUEST</span></div>
+        <div class="avatar"><div id="userInitials">--</div></div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section id="page-dashboard">
+      <div class="card card-grid">
+        <div class="stat"><div class="label stat-label">Total Pengaduan</div><div class="value stat-value" id="statTotal">0</div></div>
+        <div class="stat"><div class="label stat-label">Pending</div><div class="value stat-value" id="statPending">0</div></div>
+        <div class="stat"><div class="label stat-label">Dalam Proses</div><div class="value stat-value" id="statProgress">0</div></div>
+        <div class="stat"><div class="label stat-label">Selesai</div><div class="value stat-value" id="statDone">0</div></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;color:#213241">Ringkasan Pengaduan Terbaru</div>
+          <div><button class="btn btn-muted" onclick="goTo('recap')">Lihat Semua / Recap</button></div>
+        </div>
+        <div id="recentList" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- TEMPAT PENGADUAN -->
+    <section id="page-pengaduan" style="display:none">
+      <div class="card">
+        <div style="font-weight:700;color:#213241;margin-bottom:10px">Form Tempat Pengaduan</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+          <div>
+            <label>Pilih Tipe Pelapor</label>
+            <select id="pelaporType" class="input">
+              <option value="">-- Pilih Tipe --</option>
+              <option value="DOSEN">DOSEN</option>
+              <option value="MAHASISWA">MAHASISWA</option>
+              <option value="STAFF">STAFF</option>
+              <option value="LAINNYA">LAINNYA</option>
+            </select>
+          </div>
+
+          <div>
+  <label>Nama Pelapor</label>
+  <input id="pelaporName" class="input" placeholder="Masukkan nama pelapor">
+</div>
+
+          <div>
+            <label>Tanggal</label>
+            <input id="pengaduanDate" class="input" type="date" />
+          </div>
+
+          <div>
+            <label>Waktu</label>
+            <input id="pengaduanTime" class="input" type="time" />
+          </div>
+
+          <div style="grid-column:1/-1">
+            <label>Tempat Pengaduan</label>
+            <input id="pengaduanTitle" class="input" placeholder="Contoh: Gedung A - Toilet Lantai 2" />
+          </div>
+
+          <div style="grid-column:1/-1">
+            <label>Uraian Pengaduan</label>
+            <textarea id="pengaduanDesc" class="input" rows="4" placeholder="Jelaskan pengaduan..."></textarea>
+          </div>
+
+          <div style="grid-column:1/-1;text-align:right">
+            <button class="btn btn-primary" onclick="submitPengaduan()">Kirim Pengaduan</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- URAIAN PENGADUAN -->
+    <section id="page-uraian" style="display:none">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700;color:#213241">Uraian Pengaduan</div>
+          <div><input id="searchUraian" class="input" placeholder="Cari uraian..." oninput="filterUraian()" /></div>
+        </div>
+        <div id="uraianList" style="margin-top:12px"></div>
+      </div>
+    </section>
+
+    <!-- RECAP -->
+    <section id="page-recap" style="display:none">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700;color:#213241">Recap Laporan</div>
+            <div style="font-size:13px;color:var(--muted)">Filter dan export data pengaduan</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="recapFrom" type="date" class="input" style="width:160px" />
+            <input id="recapTo" type="date" class="input" style="width:160px" />
+            <select id="recapType" class="input" style="width:160px">
+              <option value="">-- Semua Tipe --</option>
+              <option value="DOSEN">DOSEN</option>
+              <option value="MAHASISWA">MAHASISWA</option>
+              <option value="STAFF">STAFF</option>
+              <option value="LAINNYA">LAINNYA</option>
+            </select>
+            <button class="btn btn-primary" onclick="applyRecapFilter()">Terapkan</button>
+            <button class="btn btn-muted" onclick="exportCSVRecap()">Export CSV</button>
+          </div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:12px">
+          <table class="table" id="recapTable">
+            <thead><tr><th>No</th><th>Tanggal</th><th>Waktu</th><th>Tipe</th><th>Pelapor</th><th>Tempat Pengaduan</th><th>Uraian</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal" aria-hidden="true">
+  <div class="modal-content">
+    <h3>Login ke Eco Faculty</h3>
+    <div style="display:grid;gap:10px;margin-top:10px">
+      <input id="loginUser" class="input" placeholder="Username" />
+      <input id="loginPass" class="input" placeholder="Password" type="password" />
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-muted" onclick="closeLogin()">Batal</button>
+        <button class="btn btn-primary" onclick="performLogin()">Login</button>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-top:6px">Demo: username <strong>admin</strong> / password <strong>admin</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Data ----------
+let pengaduans = [
+];
+let pegawais = [
+  {id:1,name:'Ahmad Jhony',role:'STAFF'},
+  {id:2,name:'Siti Nurhaliza',role:'STAFF'},
+  {id:3,name:'Dr. Budi',role:'DOSEN'}
+];
+const dataPelapor = {
+  Dosen: [],
+  Mahasiswa: [],
+  Staff: [],
+  Lainnya: []
+};
+
+// ---------- User ----------
+let currentUser = {name:'Tamu',role:'GUEST'};
+
+// ---------- Navigation ----------
+const navLinks = document.querySelectorAll('#mainNav a');
+navLinks.forEach(a => {
+  a.addEventListener('click', (e) => {
+    const pg = a.getAttribute('data-page');
+    if(pg){
+      e.preventDefault();
+      // Cek akses untuk tamu
+      if(currentUser.role==='GUEST' && ['recap','pegawai'].includes(pg)){
+        alert('Akses ditolak. Login sebagai Admin untuk membuka halaman ini.');
+        return;
+      }
+      navLinks.forEach(x=>x.classList.remove('active'));
+      a.classList.add('active');
+      goTo(pg);
+    }
+  });
+});
+
+document.getElementById('openLogin').addEventListener('click', ()=>openLogin());
+document.getElementById('logoutBtn').addEventListener('click', ()=>{ logout(); });
+
+// ---------- Halaman ----------
+function goTo(page){
+  document.querySelectorAll('main section').forEach(s=>s.style.display='none');
+  const el = document.getElementById('page-'+page);
+  if(el) el.style.display = 'block';
+  if(page==='dashboard') renderRecent();
+  if(page==='recap') renderRecapTable(pengaduans);
+  if(page==='pengaduan') populatePelaporSelects();
+  if(page==='uraian') filterUraian();
+}
+
+// ---------- Populate Pelapor ----------
+function populatePelaporSelects(){
+  const sel = document.getElementById('pelaporName');
+  sel.innerHTML = '<option value="">-- Pilih Nama --</option>';
+  const tipe = document.getElementById('pelaporType').value;
+  if(tipe && dataPelapor[tipe]){
+    dataPelapor[tipe].forEach(n=>{
+      const opt = document.createElement('option');
+      opt.value=n; opt.textContent=n;
+      sel.appendChild(opt);
+    });
+  }
+}
+document.getElementById('pelaporType').addEventListener('change', populatePelaporSelects);
+
+// ---------- Submit Pengaduan ----------
+function submitPengaduan(){
+  const type = document.getElementById('pelaporType').value;
+  const name = document.getElementById('pelaporName').value || type;
+  const date = document.getElementById('pengaduanDate').value;
+  const time = document.getElementById('pengaduanTime').value;
+  const title = document.getElementById('pengaduanTitle').value;
+  const desc = document.getElementById('pengaduanDesc').value;
+  if(!type||!name||!date||!time||!title||!desc){alert('Lengkapi semua field!');return;}
+  const id = pengaduans.length? Math.max(...pengaduans.map(x=>x.id))+1 :1;
+  pengaduans.push({id,date,time,type,reporter:name,title,desc,status:'Pending'});
+  alert('Pengaduan berhasil dikirim!');
+  document.getElementById('pengaduanTitle').value='';
+  document.getElementById('pengaduanDesc').value='';
+  renderDashboardStats();
+}
+
+// ---------- Dashboard ----------
+function renderDashboardStats(){
+  document.getElementById('statTotal').textContent = pengaduans.length;
+  document.getElementById('statPending').textContent = pengaduans.filter(x=>x.status==='Pending').length;
+  document.getElementById('statProgress').textContent = pengaduans.filter(x=>x.status==='In Progress').length;
+  document.getElementById('statDone').textContent = pengaduans.filter(x=>x.status==='Completed').length;
+}
+renderDashboardStats();
+
+// Recent
+function renderRecent(){
+  const list = document.getElementById('recentList');
+  list.innerHTML='';
+  pengaduans.slice(-5).reverse().forEach(p=>{
+    const div = document.createElement('div');
+    div.style.padding='6px 0';
+    div.textContent=`[${p.status}] ${p.date} ${p.time} - ${p.reporter} : ${p.title}`;
+    list.appendChild(div);
+  });
+}
+
+// ---------- Uraian ----------
+function filterUraian(){
+  const term = document.getElementById('searchUraian')?.value.toLowerCase()||'';
+  const el = document.getElementById('uraianList');
+  el.innerHTML='';
+  pengaduans.filter(x=>x.desc.toLowerCase().includes(term)).forEach(p=>{
+    const div = document.createElement('div');
+    div.style.padding='6px 0';
+    div.textContent=`[${p.status}] ${p.date} ${p.time} - ${p.reporter} : ${p.desc}`;
+    el.appendChild(div);
+  });
+}
+
+// ---------- Recap ----------
+function renderRecapTable(data){
+  const tbody = document.querySelector('#recapTable tbody');
+  tbody.innerHTML='';
+  data.forEach((p,i)=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML=`<td>${i+1}</td><td>${p.date}</td><td>${p.time}</td><td>${p.type}</td><td>${p.reporter}</td><td>${p.title}</td><td>${p.desc}</td><td>${renderStatusBadge(p)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function renderStatusBadge(p){
+  const color = p.status==='Completed'?'success':p.status==='In Progress'?'progress':'warn';
+  return `<span class="badge ${color}" onclick="changeStatus(${p.id})">${p.status}</span>`;
+}
+function changeStatus(id){
+  const p = pengaduans.find(x=>x.id===id); if(!p) return;
+  const options = ['Pending','In Progress','Completed'];
+  p.status = options[(options.indexOf(p.status)+1)%options.length];
+  renderRecapTable(pengaduans);
+  renderDashboardStats();
+}
+function applyRecapFilter(){
+  const from = document.getElementById('recapFrom').value;
+  const to = document.getElementById('recapTo').value;
+  const tipe = document.getElementById('recapType').value;
+  let data = pengaduans;
+  if(from) data=data.filter(x=>x.date>=from);
+  if(to) data=data.filter(x=>x.date<=to);
+  if(tipe) data=data.filter(x=>x.type===tipe);
+  renderRecapTable(data);
+}
+function exportCSVRecap(){
+  let csv = 'No,Tanggal,Waktu,Tipe,Pelapor,Tempat Pengaduan,Uraian,Status\n';
+  pengaduans.forEach((p,i)=>{
+    csv+=`${i+1},${p.date},${p.time},${p.type},${p.reporter},${p.title},${p.desc},${p.status}\n`;
+  });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='recap_pengaduan.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ---------- Login ----------
+function openLogin(){ document.getElementById('loginModal').classList.add('active'); }
+function closeLogin(){ document.getElementById('loginModal').classList.remove('active'); }
+function updateNavAccess(){
+  const recapBtn = document.querySelector('a[data-page="recap"]');
+  const pegawaiBtn = document.querySelector('a[data-page="pegawai"]');
+  if(currentUser.role==='GUEST'){
+    recapBtn.style.display='none';
+    pegawaiBtn.style.display='none';
+  } else {
+    recapBtn.style.display='flex';
+    pegawaiBtn.style.display='flex';
+  }
+}
+function performLogin(){
+  const u=document.getElementById('loginUser').value;
+  const p=document.getElementById('loginPass').value;
+  if(u==='admin'&&p==='admin'){currentUser={name:'Admin',role:'ADMIN'};alert('Login Admin berhasil!');}
+  else{alert('Login gagal! Gunakan demo admin/admin');return;}
+  document.getElementById('userName').innerHTML=`${currentUser.name}<br><span style="font-size:11px;color:#6b8799">${currentUser.role}</span>`;
+  document.getElementById('userInitials').textContent=currentUser.name[0];
+  closeLogin();
+  updateNavAccess();
+}
+function logout(){
+  currentUser={name:'Tamu',role:'GUEST'};
+  document.getElementById('userName').innerHTML=`Tamu<br><span style="font-size:11px;color:#6b8799">GUEST</span>`;
+  document.getElementById('userInitials').textContent='--';
+  updateNavAccess();
+  goTo('dashboard');
+}
+
+// ---------- Init ----------
+goTo('dashboard');
+updateNavAccess();
+</script>
+</body>
+</html>
